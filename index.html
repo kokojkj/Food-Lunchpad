@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food Lunchpad</title>
+    <script src="https://cdn.jsdelivr.net/npm/howler@2.2.3/dist/howler.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Indie+Flower&display=swap');
+
+        :root {
+            --bg-primary: #FFF5E1;
+            --bg-secondary: #FFE5B4;
+            --text-primary: #8B4513;
+            --accent-primary: #FF6B6B;
+            --accent-secondary: #4ECDC4;
+        }
+
+        body {
+            font-family: 'Indie Flower', cursive;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            color: var(--text-primary);
+        }
+
+        .container {
+            text-align: center;
+            background-color: rgba(255, 255, 255, 0.7);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            font-size: 3rem;
+            margin-bottom: 20px;
+            color: var(--accent-primary);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .lunch-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 15px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .lunch-pad {
+            background-color: white;
+            border: 3px solid var(--accent-primary);
+            border-radius: 15px;
+            padding: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+        }
+
+        .lunch-pad:hover {
+            transform: scale(1.05);
+            background-color: var(--accent-secondary);
+            color: white;
+        }
+
+        .lunch-pad.active {
+            transform: scale(0.95);
+            background-color: var(--accent-primary);
+            color: white;
+        }
+
+        .lunch-pad img {
+            max-width: 100px;
+            margin-bottom: 10px;
+            transition: transform 0.2s ease;
+        }
+
+        .lunch-pad:hover img {
+            transform: rotate(15deg);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Food Lunchpad</h1>
+        <div class="lunch-grid" id="lunchpad">
+            <div class="lunch-pad" data-sound="pan" data-key="65">
+                <img src="icons/pan.png" alt="Sizzling Pan">
+                <div>pan (A)</div>
+            </div>
+            <div class="lunch-pad" data-sound="chop" data-key="83">
+                <img src="icons/chop.png" alt="Chopping">
+                <div>Chop (S)</div>
+            </div>
+            <div class="lunch-pad" data-sound="pour" data-key="68">
+                <img src="icons/pouring.png" alt="Pouring">
+                <div>Pour (D)</div>
+            </div>
+            <div class="lunch-pad" data-sound="crisp" data-key="70">
+                <img src="icons/crispy.png" alt="crisp">
+                <div>crisp (F)</div>
+            </div>
+            <div class="lunch-pad" data-sound="boil" data-key="71">
+                <img src="icons/boiling.png" alt="Boiling">
+                <div>Boil (G)</div>
+            </div>
+            <div class="lunch-pad" data-sound="mix" data-key="72">
+                <img src="icons/mixing.png" alt="Mixing">
+                <div>Mix (H)</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const sounds = {
+            pan: 'sounds/pan.mp3',
+            chop: 'sounds/chopping.mp3',
+            pour: 'sounds/pouring.mp3',
+            crisp: 'sounds/crispy.mp3',
+            boil: 'sounds/boiling.mp3',
+            mix: 'sounds/mixing.mp3'
+        };
+
+        const soundInstances = {};
+        Object.keys(sounds).forEach(key => {
+            soundInstances[key] = new Howl({
+                src: [sounds[key]],
+            });
+        });
+
+        const lunchpad = document.getElementById('lunchpad');
+        function playSound(soundKey) {
+            const pad = document.querySelector(`.lunch-pad[data-sound="${soundKey}"]`);
+            if (pad && soundInstances[soundKey]) {
+                soundInstances[soundKey].play();
+                pad.classList.add('active');
+                setTimeout(() => pad.classList.remove('active'), 200);
+            }
+        }
+
+        lunchpad.addEventListener('click', (e) => {
+            const soundKey = e.target.closest('.lunch-pad')?.dataset.sound;
+            if (soundKey) playSound(soundKey);
+        });
+
+        document.addEventListener('keydown', (e) => {
+            const pad = document.querySelector(`.lunch-pad[data-key="${e.keyCode}"]`);
+            if (pad) playSound(pad.dataset.sound);
+        });
+    </script>
+</body>
+</html>
